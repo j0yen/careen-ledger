@@ -1,0 +1,21 @@
+[package]
+name = "careen-ledger"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.85"
+description = "Was-it-worth-it accounting for Cargo target/ sweeps"
+
+[[bin]]
+name = "careen-ledger"
+path = "src/main.rs"
+
+[dependencies]
+clap = { version = "4", features = ["derive"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+anyhow = "1"
+libc = "0.2"
+chrono = { version = "0.4", features = ["serde"] }
+
+[dev-dependencies]
+tempfile = "3"
