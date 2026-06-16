@@ -411,7 +411,6 @@ fn main() -> Result<()> {
 #[allow(clippy::unwrap_used, clippy::expect_used, clippy::panic)]
 mod tests {
     use super::*;
-    use std::io::Write as _;
     use tempfile::NamedTempFile;
 
     fn empty_ledger() -> NamedTempFile {
