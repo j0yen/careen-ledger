@@ -1,0 +1,116 @@
+{
+  "schema": "autobuilder.intent_card.v1",
+  "prd_source": "/home/jsy/wintermute/autobuilder/PRD-careen-ledger.md",
+  "intent_slug": "careen-ledger",
+  "root_motivation": "Without recording both the bytes saved by a careen sweep AND the rebuild cost it forces, the fleet has no signal to distinguish cold repos (worth careening) from hot repos (waste: reclaim 9G, pay it back in minutes). The ledger closes that feedback loop so careen-guard can make data-driven decisions.",
+  "user_persona": "wintermute automation (careen-guard daemon) and Joe Yen (CLI inspection) on a developer laptop where cargo clean decisions have measurable cost.",
+  "five_whys_trace": [
+    {
+      "why": 1,
+      "q": "Why does careen-sweep need a ledger?",
+      "a": "Because careen-sweep emits per-sweep JSON but has no memory: it doesn't know whether the next build paid back what it reclaimed."
+    },
+    {
+      "why": 2,
+      "q": "Why does not knowing the payback cost matter?",
+      "a": "Because a hot repo rebuilt daily can recover 9G of disk, then spend it all again in recompile time within minutes, making the sweep net-negative."
+    },
+    {
+      "why": 3,
+      "q": "Why can't careen-guard decide without the ledger?",
+      "a": "The guard only sees instantaneous disk pressure; the signal it needs — 'did the last sweep cause a painful rebuild?' — is only observable after the sweep, across multiple build events."
+    }
+  ],
+  "unfakeable_metric": {
+    "name": "acceptance_tests_passing_count",
+    "lower_is_better": false,
+    "harness_command": "scripts/run-metrics.sh",
+    "target": 8
+  },
+  "acceptance_criteria": [
+    {
+      "id": "AC1",
+      "level": "MUST",
+      "description": "careen-ledger record <summary.json> appends one immutable JSONL line carrying repo, ts, removed_bytes, and classes, and prints the new entry id.",
+      "test": "tests/acceptance_ac1.rs"
+    },
+    {
+      "id": "AC2",
+      "level": "MUST",
+      "description": "attribute <id> --rebuilt-crates N --wall-secs S appends a paired record keyed by that id with the rebuild cost; the original record is left byte-for-byte unchanged (append-only proven by a test).",
+      "test": "tests/acceptance_ac2.rs"
+    },
+    {
+      "id": "AC3",
+      "level": "MUST",
+      "description": "verdict <repo> folds all paired records for the repo into JSON with reclaimed_bytes_total, rebuild_cost_total, and a boolean worth_careening.",
+      "test": "tests/acceptance_ac3.rs"
+    },
+    {
+      "id": "AC4",
+      "level": "MUST",
+      "description": "The worth_careening rule is deterministic and documented: a cold-win fixture (high reclaim, low rebuild) → true; a hot-thrash fixture (low reclaim, high rebuild) → false. Two fixtures classify oppositely.",
+      "test": "tests/acceptance_ac4.rs"
+    },
+    {
+      "id": "AC5",
+      "level": "MUST",
+      "description": "attribute can derive rebuild cost from a cargo --message-format=json build log (counting compiler-artifact lines) when --build-log <path> is given instead of explicit counts.",
+      "test": "tests/acceptance_ac5.rs"
+    },
+    {
+      "id": "AC6",
+      "level": "MUST",
+      "description": "The ledger never rewrites or deletes a prior line; corruption of one line (bad JSON) is skipped with a warning on read, not a crash.",
+      "test": "tests/acceptance_ac6.rs"
+    },
+    {
+      "id": "AC7",
+      "level": "MUST",
+      "description": "verdict on a repo with no history exits cleanly with an insufficient-data JSON verdict, not an error.",
+      "test": "tests/acceptance_ac7.rs"
+    },
+    {
+      "id": "AC8",
+      "level": "MUST",
+      "description": "State path is created on first record if absent; --ledger <path> overrides the default for testing.",
+      "test": "tests/acceptance_ac8.rs"
+    }
+  ],
+  "scope": [
+    "Append-only JSONL ledger at ~/.local/state/careen/ledger.jsonl",
+    "record subcommand: ingest careen-sweep summary JSON, emit entry id",
+    "attribute subcommand: pair rebuild cost with a prior sweep record (explicit counts or cargo build log)",
+    "verdict subcommand: fold history into worth_careening recommendation",
+    "Deterministic scoring rule: reclaimed_bytes / rebuild_cost ratio vs threshold"
+  ],
+  "non_goals": [
+    "Triggering sweeps (that is careen-guard's job)",
+    "Performing sweeps (that is careen-sweep's job)",
+    "Automatic integration with cargo (ledger is a passive observer; caller supplies rebuild data)",
+    "Remote or multi-machine ledger synchronization",
+    "Editing or deleting ledger entries"
+  ],
+  "hard_constraints": {
+    "rust_edition": "2021",
+    "target_kind": "cli",
+    "deny_unsafe": true,
+    "msrv": "1.85",
+    "max_deps": 10,
+    "additional": {
+      "append_only": "ledger.jsonl is append-only; no line is ever overwritten or deleted",
+      "sigpipe": "install sigpipe::reset() at top of main to avoid broken-pipe panics"
+    }
+  },
+  "ambiguities_resolved": [
+    {
+      "question": "What is the worth_careening threshold?",
+      "resolution": "A repo is worth careening if cumulative reclaimed_bytes_total > 2 * rebuild_cost_bytes_equivalent. rebuild_cost_bytes is derived as rebuilt_crates * BYTES_PER_CRATE_COMPILE (constant 10_000_000 = ~10MB per crate-second proxy) + wall_secs * BYTES_PER_SECOND (constant 1_000_000). This is documented in the verdict output alongside the raw numbers."
+    },
+    {
+      "question": "What fields are required in the sweep summary JSON passed to record?",
+      "resolution": "Required: repo (string), removed_bytes (u64), removed_entries (u64), classes (object mapping class name to count). Optional: ts (ISO-8601; defaults to now). This matches careen-sweep's output schema."
+    }
+  ],
+  "created_at": "2026-06-16T00:00:00Z"
+}

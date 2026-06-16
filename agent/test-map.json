@@ -1,0 +1,10 @@
+{
+  "AC1": "tests/acceptance_ac1.rs",
+  "AC2": "tests/acceptance_ac2.rs",
+  "AC3": "tests/acceptance_ac3.rs",
+  "AC4": "tests/acceptance_ac4.rs",
+  "AC5": "tests/acceptance_ac5.rs",
+  "AC6": "tests/acceptance_ac6.rs",
+  "AC7": "tests/acceptance_ac7.rs",
+  "AC8": "tests/acceptance_ac8.rs"
+}

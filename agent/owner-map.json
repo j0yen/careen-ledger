@@ -1,0 +1,6 @@
+{
+  "src/main.rs": ["CLI parsing", "entry point", "SIGPIPE reset"],
+  "src/ledger.rs": ["append-only I/O", "JSONL read/write", "record", "attribute"],
+  "src/model.rs": ["data model", "parse_line", "RebuildCost::from_build_log"],
+  "src/verdict.rs": ["verdict computation", "worth_careening rule"]
+}

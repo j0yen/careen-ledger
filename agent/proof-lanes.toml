@@ -1,0 +1,21 @@
+# proof-lanes.toml — routes changed paths to verification lanes.
+
+[[lane]]
+name = "unit"
+paths = ["src/**"]
+checks = ["cargo test --lib"]
+
+[[lane]]
+name = "acceptance"
+paths = ["src/**", "tests/acceptance_*.rs"]
+checks = ["cargo test --test acceptance_ac1", "cargo test --test acceptance_ac2", "cargo test --test acceptance_ac3", "cargo test --test acceptance_ac4", "cargo test --test acceptance_ac5", "cargo test --test acceptance_ac6", "cargo test --test acceptance_ac7", "cargo test --test acceptance_ac8"]
+
+[[lane]]
+name = "proptest"
+paths = ["src/verdict.rs", "tests/proptest_invariants.rs"]
+checks = ["cargo test --test proptest_invariants"]
+
+[[lane]]
+name = "lint"
+paths = ["src/**"]
+checks = ["cargo clippy --workspace -- -D warnings", "cargo deny check bans licenses sources"]
