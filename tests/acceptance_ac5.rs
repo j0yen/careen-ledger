@@ -1,5 +1,6 @@
 //! AC5: `attribute` can derive rebuild cost from a cargo `--message-format=json`
 //! build log (counting `compiler-artifact` lines) when `--build-log <path>` is given.
+#![allow(clippy::unwrap_used, clippy::expect_used, clippy::panic)]
 
 use std::io::Write as _;
 use std::process::Command;

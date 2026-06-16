@@ -1,5 +1,6 @@
 //! AC3: `verdict <repo>` folds all paired records for the repo into JSON with
 //! `reclaimed_bytes_total`, `rebuild_cost_total`, and a boolean `worth_careening`.
+#![allow(clippy::unwrap_used, clippy::expect_used, clippy::panic)]
 
 use std::io::Write as _;
 use std::process::Command;

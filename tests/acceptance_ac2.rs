@@ -1,6 +1,7 @@
 //! AC2: `attribute <id> --rebuilt-crates N --wall-secs S` appends a paired
 //! record keyed by that id with the rebuild cost; the original record is left
 //! byte-for-byte unchanged (append-only proven by a test).
+#![allow(clippy::unwrap_used, clippy::expect_used, clippy::panic)]
 
 use std::io::Write as _;
 use std::process::Command;

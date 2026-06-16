@@ -1,5 +1,6 @@
 //! AC7: `verdict` on a repo with no history exits cleanly with an
 //! `insufficient-data` JSON verdict, not an error.
+#![allow(clippy::unwrap_used, clippy::expect_used, clippy::panic)]
 
 use std::process::Command;
 

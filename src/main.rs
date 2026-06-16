@@ -377,8 +377,10 @@ enum Commands {
     },
 }
 
-#[sigpipe::main]
 fn main() -> Result<()> {
+    // Reset SIGPIPE to default disposition so writes to a broken pipe produce
+    // a clean process exit rather than an unwinding panic through println!.
+    sigpipe::reset();
     let cli = Cli::parse();
     let path = resolve_path(cli.ledger.as_deref());
 
@@ -406,6 +408,7 @@ fn main() -> Result<()> {
 // ---------------------------------------------------------------------------
 
 #[cfg(test)]
+#[allow(clippy::unwrap_used, clippy::expect_used, clippy::panic)]
 mod tests {
     use super::*;
     use std::io::Write as _;

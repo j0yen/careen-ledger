@@ -1,5 +1,6 @@
 //! AC6: The ledger never rewrites or deletes a prior line; corruption of one
 //! line (bad JSON) is skipped with a warning on read, not a crash.
+#![allow(clippy::unwrap_used, clippy::expect_used, clippy::panic)]
 
 use std::io::Write as _;
 use std::process::Command;

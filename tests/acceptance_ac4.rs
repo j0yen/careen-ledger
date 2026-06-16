@@ -1,5 +1,6 @@
 //! AC4: The worth_careening rule is deterministic and documented.
 //! Two fixtures (cold-win and hot-thrash) classify oppositely.
+#![allow(clippy::unwrap_used, clippy::expect_used, clippy::panic)]
 
 use std::io::Write as _;
 use std::process::Command;

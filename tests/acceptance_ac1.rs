@@ -1,5 +1,6 @@
 //! AC1: `careen-ledger record <summary.json>` appends one immutable JSONL line
 //! carrying repo, ts, removed_bytes, and classes, and prints the new entry id.
+#![allow(clippy::unwrap_used, clippy::expect_used, clippy::panic)]
 
 use std::io::Write as _;
 use std::process::Command;

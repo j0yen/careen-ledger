@@ -1,5 +1,6 @@
 //! AC8: State path is created on first `record` if absent;
 //! `--ledger <path>` overrides the default for testing.
+#![allow(clippy::unwrap_used, clippy::expect_used, clippy::panic)]
 
 use std::io::Write as _;
 use std::process::Command;
